@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -91,6 +92,7 @@ public class GradeBookController {
 	}
 	
 	@PostMapping("/course/{course_id}/finalgrades")
+	@Transactional
 	public void calcFinalGrades(@PathVariable int course_id) {
 		System.out.println("Gradebook - calcFinalGrades for course " + course_id);
 		
@@ -134,6 +136,7 @@ public class GradeBookController {
 	}
 	
 	@PutMapping("/gradebook/{id}")
+	@Transactional
 	public void updateGradebook (@RequestBody GradebookDTO gradebook, @PathVariable("id") Integer assignmentId ) {
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
