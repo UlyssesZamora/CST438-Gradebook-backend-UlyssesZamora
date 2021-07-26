@@ -47,8 +47,7 @@ public class GradeBookController {
 	@GetMapping("/gradebook")
 	public AssignmentListDTO getAssignmentsNeedGrading( ) {
 		
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (authentication==null) ? "dwisneski@csumb.edu" :  authentication.getName();  // user name (should be instructor's email) 
+		String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
 		
 		List<Assignment> assignments = assignmentRepository.findNeedGradingByEmail(email);
 		AssignmentListDTO result = new AssignmentListDTO();
@@ -61,10 +60,9 @@ public class GradeBookController {
 	@GetMapping("/gradebook/{id}")
 	public GradebookDTO getGradebook(@PathVariable("id") Integer assignmentId  ) {
 		
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (authentication==null) ? "dwisneski@csumb.edu" :  authentication.getName();  // user name (should be instructor's email) 
-		
+		String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
 		Assignment assignment = checkAssignment(assignmentId, email);
+		
 		// get the enrollment for the course
 		//  for each student, get the current grade for assignment, 
 		//   if the student does not have a current grade, create an empty grade
@@ -97,8 +95,7 @@ public class GradeBookController {
 		System.out.println("Gradebook - calcFinalGrades for course " + course_id);
 		
 		// check that this request is from the course instructor 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (authentication==null) ? "dwisneski@csumb.edu" :  authentication.getName();  // user name (should be instructor's email) 
+		String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
 		
 		Course c = courseRepository.findByCourse_id(course_id);
 		if (!c.getInstructor().equals(email)) {
@@ -139,8 +136,7 @@ public class GradeBookController {
 	@Transactional
 	public void updateGradebook (@RequestBody GradebookDTO gradebook, @PathVariable("id") Integer assignmentId ) {
 		
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (authentication==null) ? "dwisneski@csumb.edu" :  authentication.getName();  // user name (should be instructor's email)  
+		String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
 		checkAssignment(assignmentId, email);  // check that user name matches instructor email of the course.
 		
 		// for each grade in gradebook, update the assignment grade in database 
