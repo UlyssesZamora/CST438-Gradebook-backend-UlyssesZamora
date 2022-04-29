@@ -17,6 +17,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Optional;
+
 import com.cst438.controllers.GradeBookController;
 import com.cst438.domain.Assignment;
 import com.cst438.domain.AssignmentGrade;
@@ -110,7 +112,7 @@ public class JunitTestGradebook {
 		ag.setStudentEnrollment(enrollment);
 
 		// given -- stubs for database repositories that return test data
-		given(assignmentRepository.findById(1)).willReturn(assignment);
+		given(assignmentRepository.findById(1)).willReturn(Optional.of(assignment));
 		given(assignmentGradeRepository.findByAssignmentIdAndStudentEmail(1, TEST_STUDENT_EMAIL)).willReturn(null);
 		given(assignmentGradeRepository.save(any())).willReturn(ag);
 
@@ -138,7 +140,7 @@ public class JunitTestGradebook {
 		// change grade to score = 80
 		result.grades.get(0).grade = "80";
 
-		given(assignmentGradeRepository.findById(1)).willReturn(ag);
+		given(assignmentGradeRepository.findById(1)).willReturn(Optional.of(ag));
 
 		// send updates to server
 		response = mvc
@@ -195,9 +197,9 @@ public class JunitTestGradebook {
 		ag.setStudentEnrollment(enrollment);
 
 		// given -- stubs for database repositories that return test data
-		given(assignmentRepository.findById(1)).willReturn(assignment);
+		given(assignmentRepository.findById(1)).willReturn(Optional.of(assignment));
 		given(assignmentGradeRepository.findByAssignmentIdAndStudentEmail(1, TEST_STUDENT_EMAIL)).willReturn(ag);
-		given(assignmentGradeRepository.findById(1)).willReturn(ag);
+		given(assignmentGradeRepository.findById(1)).willReturn(Optional.of(ag));
 
 		// end of mock data
 

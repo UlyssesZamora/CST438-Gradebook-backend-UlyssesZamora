@@ -28,7 +28,7 @@ import com.cst438.domain.GradebookDTO;
 import com.cst438.services.RegistrationService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001"})
 public class GradeBookController {
 	
 	@Autowired
@@ -97,7 +97,7 @@ public class GradeBookController {
 		// check that this request is from the course instructor 
 		String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
 		
-		Course c = courseRepository.findByCourse_id(course_id);
+		Course c = courseRepository.findById(course_id).orElse(null);
 		if (!c.getInstructor().equals(email)) {
 			throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "Not Authorized. " );
 		}
@@ -140,13 +140,17 @@ public class GradeBookController {
 		checkAssignment(assignmentId, email);  // check that user name matches instructor email of the course.
 		
 		// for each grade in gradebook, update the assignment grade in database 
+		System.out.printf("%d %s %d\n",  gradebook.assignmentId, gradebook.assignmentName, gradebook.grades.size());
 		
 		for (GradebookDTO.Grade g : gradebook.grades) {
-			AssignmentGrade ag = assignmentGradeRepository.findById(g.assignmentGradeId);
+			System.out.printf("%s\n", g.toString());
+			AssignmentGrade ag = assignmentGradeRepository.findById(g.assignmentGradeId).orElse(null);
 			if (ag == null) {
 				throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Invalid grade primary key. "+g.assignmentGradeId);
 			}
 			ag.setScore(g.grade);
+			System.out.printf("%s\n", ag.toString());
+			
 			assignmentGradeRepository.save(ag);
 		}
 		
@@ -154,7 +158,7 @@ public class GradeBookController {
 	
 	private Assignment checkAssignment(int assignmentId, String email) {
 		// get assignment 
-		Assignment assignment = assignmentRepository.findById(assignmentId);
+		Assignment assignment = assignmentRepository.findById(assignmentId).orElse(null);
 		if (assignment == null) {
 			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Assignment not found. "+assignmentId );
 		}

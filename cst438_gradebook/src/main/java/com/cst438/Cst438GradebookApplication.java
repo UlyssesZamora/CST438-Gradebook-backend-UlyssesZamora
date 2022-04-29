@@ -12,7 +12,9 @@ import com.cst438.services.RegistrationServiceREST;
 @SpringBootApplication
 public class Cst438GradebookApplication  {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
+		// delay for 1 minute to allow time for Docker compose to start database service.
+		// Thread.sleep(60000); 
 		SpringApplication.run(Cst438GradebookApplication.class, args);
 	}
 	
