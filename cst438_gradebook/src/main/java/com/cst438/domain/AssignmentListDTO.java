@@ -13,6 +13,9 @@ public class AssignmentListDTO {
 		public String dueDate;
 		public String courseTitle;
 		public int courseId;
+		
+		public AssignmentDTO() {}
+
 
 		public AssignmentDTO(int assignmentId, int courseId, String assignmentName, String dueDate,
 				String courseTitle) {
@@ -22,6 +25,7 @@ public class AssignmentListDTO {
 			this.dueDate = dueDate;
 			this.courseTitle = courseTitle;
 		}
+		
 
 		@Override
 		public String toString() {
