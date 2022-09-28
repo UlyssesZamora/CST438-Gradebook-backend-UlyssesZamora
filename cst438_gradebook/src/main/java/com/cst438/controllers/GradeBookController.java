@@ -1,5 +1,8 @@
 package com.cst438.controllers;
 
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,16 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cst438.domain.Assignment;
 import com.cst438.domain.AssignmentListDTO;
+import com.cst438.domain.AssignmentListDTO.AssignmentDTO;
 import com.cst438.domain.AssignmentGrade;
 import com.cst438.domain.AssignmentGradeRepository;
 import com.cst438.domain.AssignmentRepository;
@@ -87,6 +93,67 @@ public class GradeBookController {
 			gradebook.grades.add(grade);
 		}
 		return gradebook;
+	}
+	
+	@GetMapping("/assignment/{id}")
+	public AssignmentListDTO getAssignment(@PathVariable("id") Integer assignmentId) {
+		AssignmentListDTO assignmentDTO = new AssignmentListDTO(); 
+		Assignment a = assignmentRepository.findById(assignmentId).orElse(null);
+		assignmentDTO.assignments.add(new AssignmentListDTO.AssignmentDTO(a.getId(), a.getCourse().getCourse_id(), a.getName(), 
+				a.getDueDate().toString() , a.getCourse().getTitle()));
+		return assignmentDTO;
+	}
+	
+	
+	@PutMapping("/assignment/{id}")
+	@Transactional
+	public void updateAssignmentName(@RequestBody AssignmentDTO newAssignment, @PathVariable("id") Integer assignmentId) {
+		Assignment assignment = assignmentRepository.findById(assignmentId).orElse(null);
+		if (assignment == null) {
+			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Assignment not found. " + assignmentId );
+		}
+		assignment.setName(newAssignment.assignmentName);
+		assignmentRepository.save(assignment);
+		
+	}
+	
+	@DeleteMapping("/assignment/{id}")
+	@Transactional
+	public void deleteAssignment(@PathVariable("id") Integer assignmentId) {
+		Assignment assignment = assignmentRepository.findById(assignmentId).orElse(null);
+		//Course c = courseRepository.findById(assignment.getCourse().getCourse_id()).orElse(null);
+		
+		//System.out.println(c);
+		
+		final String instructorEmail = "dwisneski@csumb.edu";
+		
+		if (assignment.equals(null) ){ //|| !instructorEmail.equals(c.getInstructor())) {// || assignment.getAssignmentGradeSize() > 0){
+			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Assignment not found. "+assignmentId );
+		}
+		assignmentRepository.delete(assignment);
+	}
+	
+	@PostMapping("/assignment/new")
+	@Transactional
+	public void addNewAssignment(@RequestBody AssignmentDTO newAssignment) {
+		Assignment assignment = new Assignment();
+		assignment.setName(newAssignment.assignmentName);
+		assignment.setNeedsGrading(1);
+		SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd");
+		java.util.Date date;
+		try {
+			date = format.parse(newAssignment.dueDate);
+			java.sql.Date sqlStartDate = new java.sql.Date(date.getTime());  
+			assignment.setDueDate(sqlStartDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Course c = courseRepository.findById(newAssignment.courseId).orElse(null);
+		assignment.setCourse(c);
+		c.getAssignments().add(assignment);
+		assignmentRepository.save(assignment);
+		
 	}
 	
 	@PostMapping("/course/{course_id}/finalgrades")
