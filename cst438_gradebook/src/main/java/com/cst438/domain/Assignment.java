@@ -60,6 +60,12 @@ public class Assignment {
 	public void setCourse(Course course) {
 		this.course = course;
 	}
+	
+	public int getAssignmentGradeSize() {
+		return assignmentGrades.size();
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "Assignment [id=" + id + ", course_id=" + course.getCourse_id() + ", name=" + name + ", dueDate=" + dueDate
