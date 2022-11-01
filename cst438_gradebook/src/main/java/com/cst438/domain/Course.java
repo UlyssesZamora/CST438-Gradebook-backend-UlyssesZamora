@@ -1,6 +1,7 @@
 package com.cst438.domain;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -74,5 +75,20 @@ public class Course {
 		return "Course [course_id=" + course_id + ", title=" + title + ", instructor=" + instructor + ", year=" + year
 				+ ", semester=" + semester + "]";
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Course other = (Course) obj;
+		return  course_id == other.course_id
+				&& Objects.equals(instructor, other.instructor)
+				&& Objects.equals(semester, other.semester) && Objects.equals(title, other.title) && year == other.year;
+	}
+	
 	
 }
